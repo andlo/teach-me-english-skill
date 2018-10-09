@@ -17,10 +17,12 @@ class TeachMeEnglish(MycroftSkill):
     @intent_file_handler('teaching.intent')
     def handle_teaching(self, message):
         user_said = None
-        self.capture = True
+        
         while (user_said != "stop"):   
             self.speak_dialog('repeat_after_me', expect_response=False)
+            self.capture = True
             user_said = self.get_response("lesson",num_retries=0)    
+            self.capture = False
             lesson = self.last_speech
             retries = 3
             while lesson != None and user_said != "stop" and retries != 0:          
@@ -33,13 +35,17 @@ class TeachMeEnglish(MycroftSkill):
                         user_said = "stop"
                     else:
                         self.speak_dialog("repeat_after_me", expect_response=False)
-                        user_said = self.get_response(lesson,num_retries=0)    
+                        self.capture = True
+                        user_said = self.get_response(lesson,num_retries=0)
+                        self.capture = False    
                 else:
                     retries = retries - 1
                     self.speak_dialog("notperfect", expect_response=False)
                     self.speak_dialog("repeat_after_me", expect_response=False)
+                    self.capture = True
                     user_said = self.get_response(lesson,num_retries=0)    
-            
+                    self.capture = False
+                    
             self.speak_dialog("lets_try_another_one", expect_response=False)
 
         self.speak_dialog('teaching_stop', expect_response=False)
